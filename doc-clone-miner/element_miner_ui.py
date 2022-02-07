@@ -6,6 +6,7 @@ Element miner UI. Licensed under GPL v3 after PyQt5 which is used here.
 """
 import argparse
 import asyncio
+from gettext import find
 import locale
 import os
 import ndgmgr
@@ -1162,6 +1163,8 @@ class CloneMinerWorkThread(QtCore.QThread):
 
     @util.excprint
     def run(self):
+        from TextDuplicateSearch import TextDuplicateSearch
+        
         cnt = 0
         for l in self.lengths:
             with pyqt_common.pushd_c(os.path.dirname(clargs.clone_tool)):
@@ -1186,13 +1189,16 @@ class CloneMinerWorkThread(QtCore.QThread):
                     self.pui.progressChanged.emit(len(self.lengths) * 150, cnt * 150 + cplus, smsg)
 
                     # run clone miner
-                    popen_args = [clargs.clone_tool, str(l), '0', '0']
-                    if os.name == 'posix': popen_args = ["wine"] + popen_args
-                    print("Mining clones with: " + ' '.join(popen_args))
+                    # popen_args = [clargs.clone_tool, str(l), '0', '0']
+                    # if os.name == 'posix': popen_args = ["wine"] + popen_args
+                    print("Mining clones with TextDuplicateSearch")
 
-                    cmpr = subprocess.Popen(popen_args, stdout=subprocess.PIPE, stdin=subprocess.PIPE,
-                                                        stderr=subprocess.STDOUT)
-                    cmpr.communicate(input=b'\n')
+                    # cmpr = subprocess.Popen(popen_args, stdout=subprocess.PIPE, stdin=subprocess.PIPE,
+                    #                                     stderr=subprocess.STDOUT)
+                    # cmpr.communicate(input=b'\n')
+                    
+                    TextDuplicateSearch.find_clones(self.inputfile, l, os.path.join("Output", "Clones.txt"))
+                    
                     cplus = 25
 
                 # rewrite InputFiles.txt again because ...
